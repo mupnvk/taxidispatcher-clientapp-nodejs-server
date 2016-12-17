@@ -1,0 +1,234 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Users\\Администратор\\Desktop\\PRFILES\\nodejs\\\\node.exe',
+1 verbose cli   'C:\\Users\\Администратор\\Desktop\\PRFILES\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'install',
+1 verbose cli   'node-sqlserver' ]
+2 info using npm@2.11.2
+3 info using node@v0.12.5
+4 verbose install initial load of C:\Users\Администратор\Desktop\PRFILES\nodejs\package.json
+5 verbose installManyTop reading scoped package data from C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules\encoding\package.json
+6 verbose installManyTop reading scoped package data from C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules\express\package.json
+7 verbose installManyTop reading scoped package data from C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules\mssql\package.json
+8 verbose installManyTop reading scoped package data from C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules\npm\package.json
+9 verbose installManyTop reading scoped package data from C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules\socket.io\package.json
+10 info package.json socket.io@1.3.5 No license field.
+11 verbose readDependencies loading dependencies from C:\Users\Администратор\Desktop\PRFILES\nodejs\package.json
+12 silly cache add args [ 'node-sqlserver', null ]
+13 verbose cache add spec node-sqlserver
+14 silly cache add parsed spec { raw: 'node-sqlserver',
+14 silly cache add   scope: null,
+14 silly cache add   name: 'node-sqlserver',
+14 silly cache add   rawSpec: '',
+14 silly cache add   spec: '*',
+14 silly cache add   type: 'range' }
+15 silly addNamed node-sqlserver@*
+16 verbose addNamed "*" is a valid semver range for node-sqlserver
+17 silly addNameRange { name: 'node-sqlserver', range: '*', hasData: false }
+18 silly mapToRegistry name node-sqlserver
+19 silly mapToRegistry using default registry
+20 silly mapToRegistry registry https://registry.npmjs.org/
+21 silly mapToRegistry uri https://registry.npmjs.org/node-sqlserver
+22 verbose addNameRange registry:https://registry.npmjs.org/node-sqlserver not in flight; fetching
+23 verbose request uri https://registry.npmjs.org/node-sqlserver
+24 verbose request no auth needed
+25 info attempt registry request try #1 at 00:06:03
+26 verbose request id c2cff102e69c1bc8
+27 http request GET https://registry.npmjs.org/node-sqlserver
+28 http 200 https://registry.npmjs.org/node-sqlserver
+29 silly get cb [ 200,
+29 silly get   { server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+29 silly get     etag: '"8BGAPO85NAUXE37NOU7ZVGUSM"',
+29 silly get     'content-type': 'application/json',
+29 silly get     'cache-control': 'max-age=60',
+29 silly get     'content-length': '4568',
+29 silly get     'accept-ranges': 'bytes',
+29 silly get     date: 'Fri, 03 Jul 2015 21:05:05 GMT',
+29 silly get     via: '1.1 varnish',
+29 silly get     age: '0',
+29 silly get     connection: 'keep-alive',
+29 silly get     'x-served-by': 'cache-fra1224-FRA',
+29 silly get     'x-cache': 'MISS',
+29 silly get     'x-cache-hits': '0',
+29 silly get     'x-timer': 'S1435957505.021711,VS0,VE180',
+29 silly get     vary: 'Accept' } ]
+30 verbose get saving node-sqlserver to C:\Users\Администратор\AppData\Roaming\npm-cache\registry.npmjs.org\node-sqlserver\.cache.json
+31 silly addNameRange number 2 { name: 'node-sqlserver', range: '*', hasData: true }
+32 silly addNameRange versions [ 'node-sqlserver', [ '0.1.0' ] ]
+33 silly addNamed node-sqlserver@0.1.0
+34 verbose addNamed "0.1.0" is a plain semver version for node-sqlserver
+35 warn deprecated node-sqlserver@0.1.0: This package has been superseded by msnodesql.
+36 silly mapToRegistry name node-sqlserver
+37 silly mapToRegistry using default registry
+38 silly mapToRegistry registry https://registry.npmjs.org/
+39 silly mapToRegistry uri https://registry.npmjs.org/node-sqlserver
+40 verbose addRemoteTarball https://registry.npmjs.org/node-sqlserver/-/node-sqlserver-0.1.0.tgz not in flight; adding
+41 verbose addRemoteTarball [ 'https://registry.npmjs.org/node-sqlserver/-/node-sqlserver-0.1.0.tgz',
+41 verbose addRemoteTarball   '8b6ef6375ca20ca322f9e259bb870747a2cb8e6f' ]
+42 info retry fetch attempt 1 at 00:06:04
+43 info attempt registry request try #1 at 00:06:04
+44 http fetch GET https://registry.npmjs.org/node-sqlserver/-/node-sqlserver-0.1.0.tgz
+45 http fetch 200 https://registry.npmjs.org/node-sqlserver/-/node-sqlserver-0.1.0.tgz
+46 silly fetchAndShaCheck shasum 8b6ef6375ca20ca322f9e259bb870747a2cb8e6f
+47 verbose addTmpTarball C:\Users\836D~1\AppData\Local\Temp\2\npm-2160-0405b6d9\registry.npmjs.org\node-sqlserver\-\node-sqlserver-0.1.0.tgz not in flight; adding
+48 verbose addTmpTarball already have metadata; skipping unpack for node-sqlserver@0.1.0
+49 silly cache afterAdd node-sqlserver@0.1.0
+50 verbose afterAdd C:\Users\Администратор\AppData\Roaming\npm-cache\node-sqlserver\0.1.0\package\package.json not in flight; writing
+51 verbose afterAdd C:\Users\Администратор\AppData\Roaming\npm-cache\node-sqlserver\0.1.0\package\package.json written
+52 silly install resolved [ { name: 'node-sqlserver',
+52 silly install resolved     description: 'Microsoft Driver for Node.js for SQL Server',
+52 silly install resolved     author: { name: 'Microsoft Corp.' },
+52 silly install resolved     contributors: [ [Object], [Object], [Object], [Object], [Object] ],
+52 silly install resolved     version: '0.1.0',
+52 silly install resolved     keywords: [ 'sql', 'database', 'mssql', 'azure', 'sqlserver', 'tds' ],
+52 silly install resolved     homepage: 'https://github.com/WindowsAzure/node-sqlserver',
+52 silly install resolved     bugs: { name: 'https://github.com/WindowsAzure/node-sqlserver/issues' },
+52 silly install resolved     licenses: [ [Object] ],
+52 silly install resolved     main: './lib/sql.js',
+52 silly install resolved     repository:
+52 silly install resolved      { type: 'git',
+52 silly install resolved        url: 'git://github.com/WindowsAzure/node-sqlserver.git' },
+52 silly install resolved     engines: { node: '0.6' },
+52 silly install resolved     devDependencies: { mocha: '0.14.x', async: '0.1.x' },
+52 silly install resolved     _npmUser: { name: 'jguerin', email: 'jguerin@microsoft.com' },
+52 silly install resolved     _id: 'node-sqlserver@0.1.0',
+52 silly install resolved     scripts: { install: 'node-gyp rebuild' },
+52 silly install resolved     dependencies: {},
+52 silly install resolved     optionalDependencies: {},
+52 silly install resolved     _engineSupported: true,
+52 silly install resolved     _npmVersion: '1.1.24',
+52 silly install resolved     _nodeVersion: 'v0.6.19',
+52 silly install resolved     _defaultsLoaded: true,
+52 silly install resolved     dist:
+52 silly install resolved      { shasum: '8b6ef6375ca20ca322f9e259bb870747a2cb8e6f',
+52 silly install resolved        tarball: 'http://registry.npmjs.org/node-sqlserver/-/node-sqlserver-0.1.0.tgz' },
+52 silly install resolved     maintainers: [ [Object] ],
+52 silly install resolved     directories: {},
+52 silly install resolved     deprecated: 'This package has been superseded by msnodesql.',
+52 silly install resolved     _shasum: '8b6ef6375ca20ca322f9e259bb870747a2cb8e6f',
+52 silly install resolved     _resolved: 'https://registry.npmjs.org/node-sqlserver/-/node-sqlserver-0.1.0.tgz',
+52 silly install resolved     _from: 'node-sqlserver@*' } ]
+53 info install node-sqlserver@0.1.0 into C:\Users\Администратор\Desktop\PRFILES\nodejs
+54 info installOne node-sqlserver@0.1.0
+55 verbose installOne of node-sqlserver to C:\Users\Администратор\Desktop\PRFILES\nodejs not in flight; installing
+56 verbose lock using C:\Users\Администратор\AppData\Roaming\npm-cache\_locks\node-sqlserver-187a3f77d6c3b8cb.lock for C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules\node-sqlserver
+57 warn engine node-sqlserver@0.1.0: wanted: {"node":"0.6"} (current: {"node":"0.12.5","npm":"2.11.2"})
+58 silly install write writing node-sqlserver 0.1.0 to C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules\node-sqlserver
+59 verbose unbuild node_modules\node-sqlserver
+60 silly gentlyRm C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules\node-sqlserver is being purged from base C:\Users\Администратор\Desktop\PRFILES\nodejs
+61 verbose gentlyRm don't care about contents; nuking C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules\node-sqlserver
+62 verbose tar unpack C:\Users\Администратор\AppData\Roaming\npm-cache\node-sqlserver\0.1.0\package.tgz
+63 verbose tar unpacking to C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules\node-sqlserver
+64 silly gentlyRm C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules\node-sqlserver is being purged
+65 verbose gentlyRm don't care about contents; nuking C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules\node-sqlserver
+66 silly gunzTarPerm modes [ '777', '666' ]
+67 silly gunzTarPerm extractEntry package.json
+68 silly gunzTarPerm modified mode [ 'package.json', 420, 438 ]
+69 silly gunzTarPerm extractEntry .npmignore
+70 silly gunzTarPerm modified mode [ '.npmignore', 420, 438 ]
+71 silly gunzTarPerm extractEntry README.md
+72 silly gunzTarPerm modified mode [ 'README.md', 420, 438 ]
+73 silly gunzTarPerm extractEntry LICENSE
+74 silly gunzTarPerm modified mode [ 'LICENSE', 420, 438 ]
+75 silly gunzTarPerm extractEntry binding.gyp
+76 silly gunzTarPerm modified mode [ 'binding.gyp', 420, 438 ]
+77 silly gunzTarPerm extractEntry lib/sql.js
+78 silly gunzTarPerm modified mode [ 'lib/sql.js', 420, 438 ]
+79 silly gunzTarPerm extractEntry src/OdbcOperation.cpp
+80 silly gunzTarPerm modified mode [ 'src/OdbcOperation.cpp', 420, 438 ]
+81 silly gunzTarPerm extractEntry src/Column.h
+82 silly gunzTarPerm modified mode [ 'src/Column.h', 420, 438 ]
+83 silly gunzTarPerm extractEntry src/Connection.h
+84 silly gunzTarPerm modified mode [ 'src/Connection.h', 420, 438 ]
+85 silly gunzTarPerm extractEntry src/OdbcConnection.cpp
+86 silly gunzTarPerm modified mode [ 'src/OdbcConnection.cpp', 420, 438 ]
+87 silly gunzTarPerm extractEntry src/OdbcConnection.h
+88 silly gunzTarPerm modified mode [ 'src/OdbcConnection.h', 420, 438 ]
+89 silly gunzTarPerm extractEntry src/OdbcConnectionBridge.h
+90 silly gunzTarPerm modified mode [ 'src/OdbcConnectionBridge.h', 420, 438 ]
+91 silly gunzTarPerm extractEntry src/OdbcException.cpp
+92 silly gunzTarPerm modified mode [ 'src/OdbcException.cpp', 420, 438 ]
+93 silly gunzTarPerm extractEntry src/OdbcException.h
+94 silly gunzTarPerm modified mode [ 'src/OdbcException.h', 420, 438 ]
+95 silly gunzTarPerm extractEntry src/OdbcHandle.h
+96 silly gunzTarPerm modified mode [ 'src/OdbcHandle.h', 420, 438 ]
+97 silly gunzTarPerm extractEntry src/Connection.cpp
+98 silly gunzTarPerm modified mode [ 'src/Connection.cpp', 420, 438 ]
+99 silly gunzTarPerm extractEntry src/OdbcOperation.h
+100 silly gunzTarPerm modified mode [ 'src/OdbcOperation.h', 420, 438 ]
+101 silly gunzTarPerm extractEntry src/Operation.h
+102 silly gunzTarPerm modified mode [ 'src/Operation.h', 420, 438 ]
+103 silly gunzTarPerm extractEntry src/ResultSet.cpp
+104 silly gunzTarPerm modified mode [ 'src/ResultSet.cpp', 420, 438 ]
+105 silly gunzTarPerm extractEntry src/ResultSet.h
+106 silly gunzTarPerm modified mode [ 'src/ResultSet.h', 420, 438 ]
+107 silly gunzTarPerm extractEntry src/stdafx.cpp
+108 silly gunzTarPerm modified mode [ 'src/stdafx.cpp', 420, 438 ]
+109 silly gunzTarPerm extractEntry src/stdafx.h
+110 silly gunzTarPerm modified mode [ 'src/stdafx.h', 420, 438 ]
+111 silly gunzTarPerm extractEntry src/Utility.cpp
+112 silly gunzTarPerm modified mode [ 'src/Utility.cpp', 420, 438 ]
+113 silly gunzTarPerm extractEntry src/Utility.h
+114 silly gunzTarPerm modified mode [ 'src/Utility.h', 420, 438 ]
+115 silly gunzTarPerm extractEntry test/connect.js
+116 silly gunzTarPerm modified mode [ 'test/connect.js', 420, 438 ]
+117 silly gunzTarPerm extractEntry test/query.js
+118 silly gunzTarPerm modified mode [ 'test/query.js', 420, 438 ]
+119 silly gunzTarPerm extractEntry test/runtests.js
+120 silly gunzTarPerm modified mode [ 'test/runtests.js', 420, 438 ]
+121 silly gunzTarPerm extractEntry test/test-config.js
+122 silly gunzTarPerm modified mode [ 'test/test-config.js', 420, 438 ]
+123 silly gunzTarPerm extractEntry test/txn.js
+124 silly gunzTarPerm modified mode [ 'test/txn.js', 420, 438 ]
+125 silly gunzTarPerm extractEntry test/testlist.txt
+126 silly gunzTarPerm modified mode [ 'test/testlist.txt', 420, 438 ]
+127 verbose write writing to C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules\node-sqlserver\package.json
+128 info preinstall node-sqlserver@0.1.0
+129 verbose readDependencies loading dependencies from C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules\node-sqlserver\package.json
+130 verbose readDependencies loading dependencies from C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules\node-sqlserver\package.json
+131 silly install resolved []
+132 verbose about to build C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules\node-sqlserver
+133 info build C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules\node-sqlserver
+134 info linkStuff node-sqlserver@0.1.0
+135 silly linkStuff node-sqlserver@0.1.0 has C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules as its parent node_modules
+136 verbose linkBins node-sqlserver@0.1.0
+137 verbose linkMans node-sqlserver@0.1.0
+138 verbose rebuildBundles node-sqlserver@0.1.0
+139 info install node-sqlserver@0.1.0
+140 verbose unsafe-perm in lifecycle true
+141 info node-sqlserver@0.1.0 Failed to exec install script
+142 verbose unlock done using C:\Users\Администратор\AppData\Roaming\npm-cache\_locks\node-sqlserver-187a3f77d6c3b8cb.lock for C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules\node-sqlserver
+143 verbose stack Error: node-sqlserver@0.1.0 install: `node-gyp rebuild`
+143 verbose stack Exit status 1
+143 verbose stack     at EventEmitter.<anonymous> (C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules\npm\lib\utils\lifecycle.js:213:16)
+143 verbose stack     at EventEmitter.emit (events.js:110:17)
+143 verbose stack     at ChildProcess.<anonymous> (C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules\npm\lib\utils\spawn.js:24:14)
+143 verbose stack     at ChildProcess.emit (events.js:110:17)
+143 verbose stack     at maybeClose (child_process.js:1015:16)
+143 verbose stack     at Process.ChildProcess._handle.onexit (child_process.js:1087:5)
+144 verbose pkgid node-sqlserver@0.1.0
+145 verbose cwd C:\Users\Администратор\Desktop\PRFILES\nodejs\td_app
+146 error Windows_NT 6.3.9600
+147 error argv "C:\\Users\\Администратор\\Desktop\\PRFILES\\nodejs\\\\node.exe" "C:\\Users\\Администратор\\Desktop\\PRFILES\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "install" "node-sqlserver"
+148 error node v0.12.5
+149 error npm  v2.11.2
+150 error code ELIFECYCLE
+151 error node-sqlserver@0.1.0 install: `node-gyp rebuild`
+151 error Exit status 1
+152 error Failed at the node-sqlserver@0.1.0 install script 'node-gyp rebuild'.
+152 error This is most likely a problem with the node-sqlserver package,
+152 error not with npm itself.
+152 error Tell the author that this fails on your system:
+152 error     node-gyp rebuild
+152 error You can get their info via:
+152 error     npm owner ls node-sqlserver
+152 error There is likely additional logging output above.
+153 verbose exit [ 1, true ]
+154 verbose unbuild node_modules\node-sqlserver
+155 info preuninstall node-sqlserver@0.1.0
+156 info uninstall node-sqlserver@0.1.0
+157 verbose unbuild rmStuff node-sqlserver@0.1.0 from C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules
+158 info postuninstall node-sqlserver@0.1.0
+159 silly gentlyRm C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules\node-sqlserver is being purged from base C:\Users\Администратор\Desktop\PRFILES\nodejs
+160 verbose gentlyRm don't care about contents; nuking C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules\node-sqlserver
+161 silly vacuum-fs purging C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules\node-sqlserver
+162 silly vacuum-fs quitting because other entries in C:\Users\Администратор\Desktop\PRFILES\nodejs\node_modules
