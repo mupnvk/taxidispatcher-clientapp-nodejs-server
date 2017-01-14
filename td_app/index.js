@@ -23,6 +23,24 @@ var config = {
     }
 }
 
+console.log('Start test db-connection...');
+var connection_test = new sql.Connection(config, function(err) {
+	if(err)	{    
+		console.log(err.message);                      // Canceled. 
+		console.log(err.code); 
+	}	else	{      
+
+		var request = new sql.Request(connection_test);  
+		request.query('select COUNT(*) as number FROM Voditelj WHERE V_rabote=1', function(err, recordset) {
+
+        console.log(recordset);
+    });
+
+   }
+  console.log('End test db-connection.');
+    
+  });
+
 function findClientsSocket(roomId, namespace) {
     var res = []
     , ns = io.of(namespace ||"/");    // the default namespace is "/"
