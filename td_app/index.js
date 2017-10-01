@@ -16,7 +16,7 @@ var config = {
     user: 'app_server',
     password: 'app_server',
     server: '192.168.0.90\\SQLEXPRESS', // You can use 'localhost\\instance' to connect to named instance 
-    database: 'TDTwoRelease0408',
+    database: 'TD5R1',
     
     options: {
         encrypt: false // Use this if you're on Windows Azure 
