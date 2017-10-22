@@ -23,8 +23,8 @@ var config = {
     }
 }
 
-console.log('Start test db-connection...'+sql);
-var connection_test = new sql.ConnectionPool(config, function(err) {
+console.log('Start test db-connection...');
+var connection_test = new sql.Connection(config, function(err) {
 	if(err)	{    
 		console.log(err.message);                      // Canceled. 
 		console.log(err.code); 
@@ -33,7 +33,7 @@ var connection_test = new sql.ConnectionPool(config, function(err) {
 		var request = new sql.Request(connection_test);  
 		request.query('select COUNT(*) as number FROM Voditelj WHERE V_rabote=1', function(err, recordset) {
 
-        console.log(recordset.recordset);
+        console.log(recordset);
     });
 
    }
@@ -115,7 +115,7 @@ io.sockets.on('connection', function (socket) {
   }
   
   socket.emit('news', { hello: 'worlds' });
-  var connection = new sql.ConnectionPool(config, function(err) {
+  var connection = new sql.Connection(config, function(err) {
     // ... error checks 
 	if(err)	{    
 		console.log(err.message);                      // Canceled. 
@@ -126,7 +126,7 @@ io.sockets.on('connection', function (socket) {
 		request.query('select COUNT(*) as number FROM Voditelj WHERE V_rabote=1', function(err, recordset) {
         // ... error checks 
         //socket.emit('news', { dr_count: -1 });//recordset[0].number
-        console.dir(recordset.recordset);
+        console.dir(recordset);
     });
 	
 	}
@@ -182,12 +182,11 @@ io.sockets.on('connection', function (socket) {
 				console.log('Error of CheckClientRegistration:'+err.message);                      // Canceled. 
 				console.log('Error code:'+err.code);                         // ECANCEL //
 			}	else	{
-				var parameters = recordsets.output;
-				console.log('CheckClientRegistration result client_id='+parameters.client_id);
-				socket.emit('auth', { client_id: parameters.client_id,
-						req_trust: parameters.req_trust,
-						isagainr: parameters.isagainr,
-						acc_status: parameters.acc_status
+				console.log('CheckClientRegistration result client_id='+request.parameters.client_id.value);
+				socket.emit('auth', { client_id: request.parameters.client_id.value,
+						req_trust: request.parameters.req_trust.value,
+						isagainr: request.parameters.isagainr.value,
+						acc_status: request.parameters.acc_status.value
 						});
 			}
 			
@@ -211,8 +210,8 @@ io.sockets.on('connection', function (socket) {
 				console.log(err.message);                      // Canceled. 
 				console.log(err.code);                         // ECANCEL //
 			}	else	{
-				var parameters = recordsets.output;
-				socket.emit('clstat', { cl_status: parameters.res });
+				console.log(request.parameters.res.value);
+				socket.emit('clstat', { cl_status: request.parameters.res.value });
 			}
 
 		});
