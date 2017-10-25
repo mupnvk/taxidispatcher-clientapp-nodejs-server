@@ -199,7 +199,7 @@ io.sockets.on('connection', function (socket) {
   
   function requestAndSendStatus(conn, cid, clphone, direct)	{
 	if(stReqTimeout<=0||direct)	{
-		stReqTimeout=40;
+		stReqTimeout=20;
 		var request = new sql.Request(conn);
 		request.input('client_id', sql.Int, parseInt(cid));
 		//request.input('adres', sql.VarChar(255), encoding.convert('привет мир','CP1251','UTF-8'));
@@ -330,7 +330,8 @@ io.sockets.on('connection', function (socket) {
 	
 	var request2 = new sql.Request(connection); // or: var request = connection.request(); 
 	try	{
-		enadr_val='->'+data.enadr;
+		//enadr_val='->'+data.enadr;
+		enadr_val=data.enadr;
 		if(!enadr_val)
 			enadr_val='';
 		else if(enadr_val.length<=2)
@@ -338,7 +339,7 @@ io.sockets.on('connection', function (socket) {
 	} catch(e)	{
 		enadr_val='';
 	}
-    request2.query('EXEC	[dbo].[InsertOrderWithParamsRClient] @adres = N\''+data.stadr+enadr_val+'\',@phone = N\''+data.phone+'\','+
+    request2.query('EXEC	[dbo].[InsertOrderWithParamsRClientEx] @adres = N\''+data.stadr+'\', @enadres = N\''+enadr_val+'\',@phone = N\''+data.phone+'\','+
 		'@disp_id = -1, @status = 0, @color_check = 0, @op_order = 0, @gsm_detect_code = 0,'+
 		'@deny_duplicate = 0, @colored_new = 0, @ab_num = N\'\', @client_id = '+data.id+', @ord_num = 0,@order_id = 0', 
 		function(err, recordset) {
