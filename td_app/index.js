@@ -1,4 +1,4 @@
-﻿var http = require('http');
+var http = require('http');
 var encoding = require("encoding");
 var express = require('express'),
     app = module.exports.app = express();
@@ -15,7 +15,7 @@ var clientsCount = 0;
 var config = {
     user: 'app_server',
     password: 'app_server',
-    server: '192.168.1.90\\SQLEXPRESS', // You can use 'localhost\\instance' to connect to named instance 
+    server: '192.168.100.50\\SQLEXPRESS', // You can use 'localhost\\instance' to connect to named instance 
     database: 'TD5R1',
     
     options: {
@@ -66,7 +66,7 @@ function showClients()	{
 	console.log(currentDate);
 	var resC = findClientsSocket();
 	for(i=0;i<findClientsSocket().length;i++)	{
-		console.log(resC[i].id);
+		//console.log(resC[i].id);
                 clcnt++;
         }
         clientsCount=clcnt;
@@ -110,7 +110,7 @@ io.sockets.on('connection', function (socket) {
 	  }
 	  return;
   }	else	{
-	  console.log('client connect, num='+clientsCount);
+	  //console.log('client connect, num='+clientsCount);
 	  clientsCount++;
   }
   
@@ -212,28 +212,29 @@ io.sockets.on('connection', function (socket) {
 				console.log(err.code);                         // ECANCEL //
 			}	else	{
 				var parameters = recordsets.output;
+				console.log(parameters.res);
 				socket.emit('clstat', { cl_status: parameters.res });
 			}
 
 		});
-	} else
-		console.log("Too many requests from "+clphone);
+	} //else
+		//console.log("Too many requests from "+clphone);
   }
   
   socket.on('status', function (data) {
-	console.log(data);
-	console.log("=======");
-	console.log(typeof data);
+	//console.log(data);
+	//console.log("=======");
+	//console.log(typeof data);
 	if(typeof data==='string')	{
 		tp = tryParseJSON(data);
-		console.log("=======");
-		console.log(tp);
+		//console.log("=======");
+		//console.log(tp);
 		if(tp)
 			data = tp;
 	}  
 	  
     requestAndSendStatus(connection, data.cid);
-	console.log("Status request: "+JSON.stringify(data));
+	//console.log("Status request: "+JSON.stringify(data));
   });
   
   socket.on('cancel order', function (data) {
@@ -282,6 +283,11 @@ io.sockets.on('connection', function (socket) {
 			data = tp;
 	}  
 	  
+	if (!(data.clat && data.clon) || data.clat.indexOf('0') >=0 || data.clon.indexOf('0') >=0) {
+		console.log('Empty coords!');
+		return;
+	}
+	  
 	console.log('ccoords '+data.phone+', lat='+data.clat+', lon='+data.clon);  //[CancelOrdersRClient]reqCancelTimeout
 	//if(reqCancelTimeout<=0)	{
 	
@@ -304,31 +310,31 @@ io.sockets.on('connection', function (socket) {
   });
   
   socket.on('new order', function (data) {
-	console.log(data);
-	console.log("=======");
-	console.log(typeof data);
+	//console.log(data);
+	//console.log("=======");
+	//console.log(typeof data);
 	if(typeof data==='string')	{
 		tp = tryParseJSON(data);
-		console.log("=======");
-		console.log(tp);
+		//console.log("=======");
+		//console.log(tp);
 		if(tp)
 			data = tp;
 	}  
 	  
-    console.log('++'+data);
+    //console.log('++'+data);
 	var out='';	
 	var dat = data;//['dr_count']
 	for(var prop in dat)
 	//if (prop=='NUMBER')		
 		out+=dat[prop];
-	console.log(out);
+	//console.log(out);
 	
 	
 	if(reqTimeout<=0)	{
 	stReqTimeout=0;
 	
 	
-	var request2 = new sql.Request(connection); // or: var request = connection.request(); 
+	var sqlTxt, request2 = new sql.Request(connection); // or: var request = connection.request(); 
 	try	{
 		//enadr_val='->'+data.enadr;
 		enadr_val=data.enadr;
@@ -339,9 +345,19 @@ io.sockets.on('connection', function (socket) {
 	} catch(e)	{
 		enadr_val='';
 	}
-    request2.query('EXEC	[dbo].[InsertOrderWithParamsRClientEx] @adres = N\''+data.stadr+'\', @enadres = N\''+enadr_val+'\',@phone = N\''+data.phone+'\','+
-		'@disp_id = -1, @status = 0, @color_check = 0, @op_order = 0, @gsm_detect_code = 0,'+
-		'@deny_duplicate = 0, @colored_new = 0, @ab_num = N\'\', @client_id = '+data.id+', @ord_num = 0,@order_id = 0', 
+	
+	if (data.lat && data.lon) {
+		console.log('============================== insert with coords ' + data.lat + '  ' + data.lon);
+		sqlTxt = 'EXEC	[dbo].[InsertOrderWithParamsRClientWCoords] @adres = N\''+data.stadr+'\', @enadres = N\''+enadr_val+'\',@phone = N\''+data.phone+'\','+
+			'@disp_id = -1, @status = 0, @color_check = 0, @op_order = 0, @gsm_detect_code = 0,'+
+			'@deny_duplicate = 0, @colored_new = 0, @ab_num = N\'\', @client_id = '+data.id+',@lat = N\''+data.lat+'\',@lon = N\''+data.lon+'\', @ord_num = 0,@order_id = 0';
+	} else {
+		sqlTxt = 'EXEC	[dbo].[InsertOrderWithParamsRClientEx] @adres = N\''+data.stadr+'\', @enadres = N\''+enadr_val+'\',@phone = N\''+data.phone+'\','+
+			'@disp_id = -1, @status = 0, @color_check = 0, @op_order = 0, @gsm_detect_code = 0,'+
+			'@deny_duplicate = 0, @colored_new = 0, @ab_num = N\'\', @client_id = '+data.id+', @ord_num = 0,@order_id = 0';
+	}
+	
+    request2.query(sqlTxt, 
 		function(err, recordset) {
 			requestAndSendStatus(connection, data.id, data.phone, true);
 			if(err)	{
