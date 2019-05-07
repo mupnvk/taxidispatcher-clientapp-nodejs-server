@@ -75,6 +75,19 @@ function showClients()	{
 
 setInterval( showClients, 10000);
 
+function queryRequest(sqlText, callbackSuccess, callbackError, connection) {
+		var request = new sql.Request(connection);
+		request.query(sqlText, function (err, recordset) {
+			if (err) {
+				console.log(err.message);
+				console.log(err.code);
+				callbackError && callbackError(err);
+			} else {
+				callbackSuccess && callbackSuccess(recordset);
+			}
+		});
+	}
+
 io.sockets.on('connection', function (socket) {
   console.log('New sock id: '+socket.id);	
   var reqTimeout=0;
@@ -234,6 +247,34 @@ io.sockets.on('connection', function (socket) {
 	}  
 	  
     requestAndSendStatus(connection, data.cid);
+	//console.log("Status request: "+JSON.stringify(data));
+  });
+  
+  socket.on('tarifs_and_options', function (data) {
+	//console.log(data);
+	//console.log("=======");
+	//console.log(typeof data);
+	if(typeof data==='string')	{
+		tp = tryParseJSON(data);
+		//console.log("=======");
+		//console.log(tp);
+		if(tp)
+			data = tp;
+	}
+
+	queryRequest('SELECT dbo.GetJSONCompanyTOList(' + data.cid + ') as JSON_DATA',
+				function (recordset) {
+					if (recordset && recordset.recordset) {
+						socket.emit('tarifs_and_options', JSON.parse(recordset.recordset[0].JSON_DATA));
+						console.log('tarifs_and_options: ' + recordset.recordset[0].JSON_DATA);
+					}
+				},
+				function (err) {
+					console.log('Error of tarifs_and_options get: ' + err);
+				}, 
+				connection);
+	  
+    //requestAndSendStatus(connection, data.cid);
 	//console.log("Status request: "+JSON.stringify(data));
   });
   
