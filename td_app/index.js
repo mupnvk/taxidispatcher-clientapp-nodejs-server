@@ -2,27 +2,19 @@ var http = require('http');
 var encoding = require("encoding");
 var express = require('express'),
     app = module.exports.app = express(),
+    custom = require('./settings_custom'),
     maps = require('../../taxidispatcher-web-common/maps');
 
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);  //pass a http.Server instance
-server.listen(8081);
-console.log('Сервер клиентских приложений TaxiDispatcher запущен на порту 8081...');
+server.listen(custom.port);
+console.log('Сервер клиентских приложений TaxiDispatcher запущен на порту ' + custom.port + '...');
 
 var sql = require('mssql');
 var clientsLimit = 50;
 var clientsCount = 0;
 
-var config = {
-    user: 'app_server',
-    password: 'app_server',
-    server: 'localhost', // You can use 'localhost\\instance' to connect to named instance
-    database: 'TD5R1',
-
-    options: {
-        encrypt: false // Use this if you're on Windows Azure
-    }
-},
+var config = custom.config,
 sectors = {},
 bbox = {
   minLat: false,
@@ -79,7 +71,6 @@ function showClients()	{
 	console.log(currentDate);
 	var resC = findClientsSocket();
 	for(i=0;i<findClientsSocket().length;i++)	{
-		//console.log(resC[i].id);
                 clcnt++;
         }
         clientsCount=clcnt;
@@ -102,7 +93,7 @@ function queryRequest(sqlText, callbackSuccess, callbackError, connection) {
 	}
 
 io.sockets.on('connection', function (socket) {
-  console.log('New sock id: '+socket.id);
+  console.log('New sock id: ' + socket.id);
   var reqTimeout=0;
   var reqCancelTimeout=0;
   var stReqTimeout=0;
@@ -138,22 +129,17 @@ io.sockets.on('connection', function (socket) {
 	  }
 	  return;
   }	else	{
-	  //console.log('client connect, num='+clientsCount);
 	  clientsCount++;
   }
 
   socket.emit('news', { hello: 'worlds' });
   var connection = new sql.ConnectionPool(config, function(err) {
-    // ... error checks
 	if(err)	{
 		console.log(err.message);                      // Canceled.
 		console.log(err.code);
 	}	else	{
-		// Query
 		var request = new sql.Request(connection); // or: var request = connection.request();
 		request.query('select COUNT(*) as number FROM Voditelj WHERE V_rabote=1', function(err, recordset) {
-        // ... error checks
-        //socket.emit('news', { dr_count: -1 });//recordset[0].number
         console.dir(recordset.recordset);
     });
 
@@ -214,7 +200,6 @@ io.sockets.on('connection', function (socket) {
 						});
 			}
 
-		//    console.dir(recordsets);
 		});
 	}	else
 		console.log("Too many requests from "+data.phone);
@@ -245,37 +230,23 @@ io.sockets.on('connection', function (socket) {
   }
 
   socket.on('status', function (data) {
-	//console.log(data);
-	//console.log("=======");
-	//console.log(typeof data);
 	if(typeof data==='string')	{
 		tp = tryParseJSON(data);
-		//console.log("=======");
-		//console.log(tp);
 		if(tp)
 			data = tp;
 	}
     emitSectorDetecting();
     requestAndSendStatus(connection, data.cid);
-	//console.log("Status request: "+JSON.stringify(data));
   });
 
   socket.on('tarifs_and_options', function (data) {
-	//console.log(data);
-	//console.log("=======");
-	//console.log(typeof data);
 	if(typeof data==='string')	{
 		tp = tryParseJSON(data);
-		//console.log("=======");
-		//console.log(tp);
 		if(tp)
 			data = tp;
 	}
 
 	   emitTarifAndOptionsList(data.cid);
-
-    //requestAndSendStatus(connection, data.cid);
-	//console.log("Status request: "+JSON.stringify(data));
   });
 
   function emitTarifAndOptionsList(companyId) {
@@ -348,7 +319,6 @@ io.sockets.on('connection', function (socket) {
 			}
 			else	{
 				console.log(recordset);
-				//requestAndSendStatus(connection, data.id, data.phone);
 			}
 		});
 	}	else
@@ -361,7 +331,6 @@ io.sockets.on('connection', function (socket) {
     for (i in sectors) {
       sector = sectors[i];
 
-      //console.log(isPointInsidePolygon(sector.coords, pointLat, pointLon));
       if (maps.isPointInsidePolygon(sector.coords, pointLon, pointLat)) {
         console.log('Point lat=' + pointLat + ', lon=' + pointLon +
           ' inside to ' + sector.name);
@@ -385,7 +354,6 @@ io.sockets.on('connection', function (socket) {
             }
           },
           function (err) {
-            //setFailOrderSectDetect(orderId, defaultSectorId);
             console.log('Err of order detected sector assign request! ' + err);
           },
           connection);
@@ -412,8 +380,7 @@ io.sockets.on('connection', function (socket) {
 		return;
 	}
 
-	console.log('ccoords '+data.phone+', lat='+data.clat+', lon='+data.clon);  //[CancelOrdersRClient]reqCancelTimeout
-	//if(reqCancelTimeout<=0)	{
+	console.log('ccoords '+data.phone+', lat='+data.clat+', lon='+data.clon);
 
   if (!(sectorId || sectorName)) {
     detectSector(data.clat, data.clon);
@@ -442,9 +409,7 @@ io.sockets.on('connection', function (socket) {
 	var out='';
 	var dat = data;//['dr_count']
 	for(var prop in dat)
-	//if (prop=='NUMBER')
 		out+=dat[prop];
-	//console.log(out);
 
 
 	if(reqTimeout<=0)	{
