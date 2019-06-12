@@ -255,7 +255,7 @@ io.sockets.on('connection', function (socket) {
 		if(tp)
 			data = tp;
 	}
-
+    emitSectorDetecting();
     requestAndSendStatus(connection, data.cid);
 	//console.log("Status request: "+JSON.stringify(data));
   });
@@ -272,21 +272,56 @@ io.sockets.on('connection', function (socket) {
 			data = tp;
 	}
 
-	queryRequest('SELECT dbo.GetJSONCompanyTOList(' + data.cid + ') as JSON_DATA',
-				function (recordset) {
-					if (recordset && recordset.recordset) {
-						socket.emit('tarifs_and_options', JSON.parse(recordset.recordset[0].JSON_DATA));
-						console.log('tarifs_and_options: ' + recordset.recordset[0].JSON_DATA);
-					}
-				},
-				function (err) {
-					console.log('Error of tarifs_and_options get: ' + err);
-				},
-				connection);
+	   emitTarifAndOptionsList(data.cid);
 
     //requestAndSendStatus(connection, data.cid);
 	//console.log("Status request: "+JSON.stringify(data));
   });
+
+  function emitTarifAndOptionsList(companyId) {
+    queryRequest('SELECT \'{"command":"to_lst"\' + dbo.GetJSONCompanyTOList(' + companyId + ') + \',"msg_end":"ok"}\' as JSON_DATA',
+          function (recordset) {
+            if (recordset && recordset.recordset) {
+              socket.emit('tarifs_and_options', JSON.parse(recordset.recordset[0].JSON_DATA));
+              console.log('tarifs_and_options: ' + recordset.recordset[0].JSON_DATA);
+            }
+          },
+          function (err) {
+            console.log('Error of tarifs_and_options get: ' + err);
+          },
+          connection);
+  }
+
+  function emitSectorDetecting() {
+    if (!sectorId || !sectorName) {
+      return;
+    }
+
+    var detectData = {
+      'sectorId': sectorId,
+      'sectorName': sectorName,
+      'districtId': districtId,
+      'districtName': districtName,
+      'companyId': companyId,
+      'companyName': companyName
+    };
+
+    socket.emit('sector_detecting',
+      detectData
+    );
+
+    console.log(JSON.stringify(detectData));
+  }
+
+  function emitSectorDetectingWithTarifAndOptions() {
+    emitSectorDetecting();
+
+    if (!companyId) {
+      return;
+    }
+
+    emitTarifAndOptionsList(companyId);
+  }
 
   socket.on('cancel order', function (data) {
 	console.log(data);
@@ -300,11 +335,10 @@ io.sockets.on('connection', function (socket) {
 			data = tp;
 	}
 
-	console.log('cancel orders '+data.phone);  //[CancelOrdersRClient]reqCancelTimeout
+	console.log('cancel orders '+data.phone);
 	if(reqCancelTimeout<=0)	{
-	//requestAndSendStatus(connection, data.id, data.phone);
 
-	var request2 = new sql.Request(connection); // or: var request = connection.request();
+	var request2 = new sql.Request(connection);
     request2.query('EXEC	[dbo].[CancelOrdersRClient] @phone = N\''+data.phone+'\', @client_id = '+data.id,
 		function(err, recordset) {
 			requestAndSendStatus(connection, data.id, data.phone, true);
@@ -332,7 +366,7 @@ io.sockets.on('connection', function (socket) {
         console.log('Point lat=' + pointLat + ', lon=' + pointLon +
           ' inside to ' + sector.name);
         queryRequest('SELECT sc.*, dc.Naimenovanie, dd.id as dist_id, dd.name as dist_name, ' +
-        ' dd.address as dist_addr, gdc.Naimenovanie as company_name, gv.BOLD_ID as company_id FROM Sektor_raboty sc ' +
+        ' dd.address as dist_addr, gdc.Naimenovanie as company_name, gv.BOLD_ID as sector_company_id FROM Sektor_raboty sc ' +
         ' INNER JOIN Spravochnik dc ON sc.BOLD_ID = dc.BOLD_ID ' +
         ' LEFT JOIN DISTRICTS dd ON sc.district_id = dd.id ' +
         ' LEFT JOIN Gruppa_voditelei gv ON sc.company_id = gv.BOLD_ID ' +
@@ -340,14 +374,21 @@ io.sockets.on('connection', function (socket) {
           function (recordset) {
             if (recordset && recordset.recordset) {
               sectorData = recordset.recordset[0];
-              console.log(JSON.stringify(sectorData));
+              sectorId = i;
+              sectorName = sectorData.Naimenovanie;
+              districtId = sectorData.district_id;
+              districtName = sectorData.dist_name + '(' + sectorData.dist_addr + ')';
+              companyId = sectorData.sector_company_id;
+              companyName = sectorData.company_name;
+
+              emitSectorDetectingWithTarifAndOptions();
             }
           },
           function (err) {
             //setFailOrderSectDetect(orderId, defaultSectorId);
             console.log('Err of order detected sector assign request! ' + err);
           },
-          connectionTasks);
+          connection);
 
         break;
       }
@@ -366,7 +407,7 @@ io.sockets.on('connection', function (socket) {
 			data = tp;
 	}
 
-	if (!(data.clat && data.clon) || data.clat.indexOf('0') >=0 || data.clon.indexOf('0') >=0) {
+	if (!(data.clat && data.clon) || data.clat.indexOf('0') == 0 || data.clon.indexOf('0') == 0) {
 		console.log('Empty coords!');
 		return;
 	}
@@ -374,41 +415,30 @@ io.sockets.on('connection', function (socket) {
 	console.log('ccoords '+data.phone+', lat='+data.clat+', lon='+data.clon);  //[CancelOrdersRClient]reqCancelTimeout
 	//if(reqCancelTimeout<=0)	{
 
-  if (!sectorId) {
+  if (!(sectorId || sectorName)) {
     detectSector(data.clat, data.clon);
   }
 
 	var request2 = new sql.Request(connection); // or: var request = connection.request();
     request2.query('EXEC	[dbo].[ApplyRClientCoords] @rclient_id='+data.id+', @lat = N\''+data.clat+'\', @lon = N\''+data.clon+'\'',
 		function(err, recordset) {
-			//requestAndSendStatus(connection, data.id, data.phone, true);
 			if(err)	{
 				console.log(err.message);                      // Canceled.
 				console.log(err.code);                         // ECANCEL
 			}
 			else	{
 				console.log('Success apply coords');
-				//requestAndSendStatus(connection, data.id, data.phone);
 			}
 		});
-	//}	else
-	//	socket.emit('req_decline', { status: "many_new_order_req" });
-	//reqCancelTimeout=60;
   });
 
   socket.on('new order', function (data) {
-	//console.log(data);
-	//console.log("=======");
-	//console.log(typeof data);
 	if(typeof data==='string')	{
 		tp = tryParseJSON(data);
-		//console.log("=======");
-		//console.log(tp);
 		if(tp)
 			data = tp;
 	}
 
-    //console.log('++'+data);
 	var out='';
 	var dat = data;//['dr_count']
 	for(var prop in dat)
