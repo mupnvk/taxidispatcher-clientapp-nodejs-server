@@ -436,7 +436,8 @@ io.sockets.on('connection', function (socket) {
 		enadr_val='';
 	}
 
-  if (sectorId && false) {
+  if (sectorId) {
+    //console.lo
     if (data.tariffPlanId) {
       tariffPlanId = data.tariffPlanId;
     }
