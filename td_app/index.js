@@ -246,8 +246,11 @@ io.sockets.on('connection', function (socket) {
 		if(tp)
 			data = tp;
 	}
-
+	if (data.cid) {
 	   emitTarifAndOptionsList(data.cid);
+	} else if (companyId) {
+	   emitTarifAndOptionsList(companyId);
+	}
   });
 
   function emitTarifAndOptionsList(companyId) {
