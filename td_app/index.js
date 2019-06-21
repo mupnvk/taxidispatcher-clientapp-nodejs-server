@@ -100,7 +100,7 @@ io.sockets.on('connection', function (socket) {
   var authTimeout=0;
   var clientActiveTime=0,
   sectorId, districtId, companyId,
-  sectorName, districtName, companyName,
+  sectorName, districtName, districtGeo, companyName,
   tariffPlanId, tariffPlanName, badDetecting = false;
 
   function decReqTimeout()	{
@@ -277,6 +277,7 @@ io.sockets.on('connection', function (socket) {
       'sectorName': sectorName,
       'districtId': districtId,
       'districtName': districtName,
+      'districtGeo': districtGeo,
       'companyId': companyId,
       'companyName': companyName
     };
@@ -352,6 +353,7 @@ io.sockets.on('connection', function (socket) {
               sectorName = sectorData.Naimenovanie;
               districtId = sectorData.district_id;
               districtName = sectorData.dist_name + '(' + sectorData.dist_addr + ')';
+              districtGeo = sectorData.dist_addr;
               companyId = sectorData.sector_company_id;
               companyName = sectorData.company_name;
 
