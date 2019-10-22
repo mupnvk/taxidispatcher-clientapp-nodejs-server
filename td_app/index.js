@@ -267,6 +267,33 @@ io.sockets.on('connection', function (socket) {
           connection);
   }
 
+  socket.on('driver_list', function (data) {
+  	if(typeof data==='string')	{
+  		tp = tryParseJSON(data);
+  		if(tp)
+  			data = tp;
+  	}
+  	if (data.cid) {
+  	   emitCompanyDriversList(data.cid);
+  	} else if (companyId) {
+  	   emitCompanyDriversList(companyId);
+  	}
+  });
+
+  function emitCompanyDriversList(companyId) {
+    queryRequest('SELECT dbo.GetJSONCompanyDriversList(' + companyId + ') as JSON_DATA',
+          function (recordset) {
+            if (recordset && recordset.recordset) {
+              socket.emit('driver_list', JSON.parse(recordset.recordset[0].JSON_DATA));
+              console.log('driver_list: ' + recordset.recordset[0].JSON_DATA);
+            }
+          },
+          function (err) {
+            console.log('Error of driver_list get: ' + err);
+          },
+          connection);
+  }
+
   function emitSectorDetecting() {
     if (!sectorId || !sectorName) {
       return;
