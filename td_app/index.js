@@ -99,9 +99,9 @@ io.sockets.on('connection', function (socket) {
   var stReqTimeout=0;
   var authTimeout=0;
   var clientActiveTime=0,
-  sectorId, districtId, companyId,
-  sectorName, districtName, districtGeo, companyName,
-  tariffPlanId, tariffPlanName, badDetecting = false;
+  sectorId = 0, districtId = 0, companyId = 0,
+  sectorName = '', districtName = '', districtGeo = '', companyName = '',
+  tariffPlanId = 0, tariffPlanName = '', badDetecting = false;
 
   function decReqTimeout()	{
 	  if(reqTimeout>0)
@@ -468,33 +468,33 @@ io.sockets.on('connection', function (socket) {
 		enadr_val='';
 	}
 
-  if (sectorId) {
+  if (sectorId || data.driver_id || data.shedule_date) {
     //console.lo
     if (data.tariffPlanId) {
       tariffPlanId = data.tariffPlanId;
     }
     /**
     ALTER PROCEDURE [dbo].[InsertOrderWithSectorAndTariffParams]
-	-- Add the parameters for the stored procedure here
-	(@adres varchar(255), @enadres varchar(255), @phone varchar(255),
-	@disp_id int, @status int, @color_check int,
-	@op_order int, @gsm_detect_code int,
-	@deny_duplicate int, @colored_new int,
-	@ab_num varchar(255), @client_id int,
-	@lat varchar(50), @lon varchar(50), @sector_id int,
-    @district_id int, @company_id int, @tplan_id int, @for_all smallint
-    @ord_num  int OUT, @order_id int OUT)
-AS
-BEGIN
+  	-- Add the parameters for the stored procedure here
+  	(@adres varchar(255), @enadres varchar(255), @phone varchar(255),
+  	@disp_id int, @status int, @color_check int,
+  	@op_order int, @gsm_detect_code int,
+  	@deny_duplicate int, @colored_new int,
+  	@ab_num varchar(255), @client_id int,
+  	@lat varchar(50), @lon varchar(50), @sector_id int,
+      @district_id int, @company_id int, @tplan_id int, @for_all smallint
+      @ord_num  int OUT, @order_id int OUT)
     **/
-    var orderLat = data.lat || '0', orderLon = data.lon || '0';
+    var orderLat = data.lat || '0', orderLon = data.lon || '0',
+      driverId = data.driver_id || '0',
+      sheduleDate = data.shedule_date ? "'" + data.shedule_date + "'" : 'NULL';
     sqlTxt = 'EXEC	[dbo].[InsertOrderWithSectorAndTariffParams] @adres = N\''+data.stadr+'\', @enadres = N\''+enadr_val+'\',@phone = N\''+data.phone+'\','+
 			'@disp_id = -1, @status = 0, @color_check = 0, @op_order = 0, @gsm_detect_code = 0,'+
 			'@deny_duplicate = 0, @colored_new = 0, @ab_num = N\'\', @client_id = '+data.id+
       ',@lat = N\''+ orderLat +'\',@lon = N\''+ orderLon +'\',' +
       ' @sector_id = ' + (sectorId || 0) + ', @district_id = ' + (districtId || 0) +
       ', @company_id = ' + (companyId || 0) + ', @tplan_id = ' + (tariffPlanId || 0) + ', ' +
-      ' @for_all =0, @ord_num = 0, @order_id = 0';
+      ' @for_all =0, @driver_id = ' + driverId + ', @shedule_date = ' + sheduleDate + ', @ord_num = 0, @order_id = 0';
   } else if (data.lat && data.lon) {
 		console.log('============================== insert with coords ' + data.lat + '  ' + data.lon);
 		sqlTxt = 'EXEC	[dbo].[InsertOrderWithParamsRClientWCoords] @adres = N\''+data.stadr+'\', @enadres = N\''+enadr_val+'\',@phone = N\''+data.phone+'\','+
