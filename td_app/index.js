@@ -527,3 +527,37 @@ io.sockets.on('connection', function (socket) {
 	clientsCount--;
   });
 });
+
+socket.on('rate', function (data) {
+console.log(data);
+console.log("=======");
+console.log(typeof data);
+if(typeof data==='string')	{
+  tp = tryParseJSON(data);
+  console.log("=======");
+  console.log(tp);
+  if(tp)
+    data = tp;
+}
+
+//console.log('cancel orders '+data.phone);
+if(reqCancelTimeout<=0)	{
+
+  var request2 = new sql.Request(connection);
+  request2.query('EXEC	[dbo].[RateDriver] @rate = ' + data.rate +', @driver_id = ' + data.id,
+  function(err, recordset) {
+    if(err)	{
+      socket.emit('req_rate_answer', { status: "ERROR" });
+      console.log('req_rate_answer_error');
+      console.log(err.message);                      // Canceled.
+      console.log(err.code);                         // ECANCEL
+    }
+    else	{
+      socket.emit('req_rate_answer', { status: "OK" });
+      console.log('req_rate_answer_ok');
+    }
+  });
+}	else
+  socket.emit('req_decline', { status: "many_rate_req" });
+reqCancelTimeout=60;
+});
