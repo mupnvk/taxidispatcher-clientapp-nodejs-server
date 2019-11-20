@@ -586,3 +586,37 @@ function emitClientInfo(clientId) {
         },
         connection);
 }
+
+socket.on('update_client_info', function (data) {
+console.log(data);
+console.log("=======");
+console.log(typeof data);
+if(typeof data==='string')	{
+  tp = tryParseJSON(data);
+  console.log("=======");
+  console.log(tp);
+  if(tp)
+    data = tp;
+}
+
+//console.log('cancel orders '+data.phone);
+if(reqCancelTimeout<=0)	{
+
+  var request2 = new sql.Request(connection);
+  request2.query('EXEC	[dbo].[UpdateClientInfo] @name = N\'' + data.name +'\', @client_id = ' + data.id,
+  function(err, recordset) {
+    if(err)	{
+      socket.emit('update_client_info_answer', { status: "ERROR" });
+      console.log('update_client_info_answer_error');
+      console.log(err.message);                      // Canceled.
+      console.log(err.code);                         // ECANCEL
+    }
+    else	{
+      socket.emit('update_client_info_answer', { status: "OK" });
+      console.log('req_rate_answer_ok');
+    }
+  });
+}	else
+  socket.emit('req_decline', { status: "many_update_client_info_req" });
+reqCancelTimeout=60;
+});
