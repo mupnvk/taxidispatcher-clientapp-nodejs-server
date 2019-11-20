@@ -561,3 +561,28 @@ if(reqCancelTimeout<=0)	{
   socket.emit('req_decline', { status: "many_rate_req" });
 reqCancelTimeout=60;
 });
+
+socket.on('client_info', function (data) {
+  if(typeof data==='string')	{
+    tp = tryParseJSON(data);
+    if(tp)
+      data = tp;
+  }
+
+  emitClientInfo(data.id);
+});
+
+function emitClientInfo(clientId) {
+  queryRequest('SELECT dbo.GetJSONClientInfo(' + clientId + ') as JSON_DATA',
+        function (recordset) {
+          if (recordset && recordset.recordset) {
+            socket.emit('client_info', JSON.parse(recordset.recordset[0].JSON_DATA));
+            console.log('client_info: ' + recordset.recordset[0].JSON_DATA);
+          }
+        },
+        function (err) {
+          socket.emit('client_info', {error: err});
+          console.log('Error of client_info get: ' + err);
+        },
+        connection);
+}
