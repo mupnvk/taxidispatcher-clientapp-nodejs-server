@@ -522,67 +522,102 @@ io.sockets.on('connection', function (socket) {
 	reqTimeout=60;
 
   });
+
+  socket.on('rate', function (data) {
+  console.log(data);
+  console.log("=======");
+  console.log(typeof data);
+  if(typeof data==='string')	{
+    tp = tryParseJSON(data);
+    console.log("=======");
+    console.log(tp);
+    if(tp)
+      data = tp;
+  }
+
+  //console.log('cancel orders '+data.phone);
+  if(reqCancelTimeout<=0)	{
+
+    var request2 = new sql.Request(connection);
+    request2.query('EXEC	[dbo].[RateDriver] @rate = ' + data.rate +', @driver_id = ' + data.id,
+    function(err, recordset) {
+      if(err)	{
+        socket.emit('req_rate_answer', { status: "ERROR" });
+        console.log('req_rate_answer_error');
+        console.log(err.message);                      // Canceled.
+        console.log(err.code);                         // ECANCEL
+      }
+      else	{
+        socket.emit('req_rate_answer', { status: "OK" });
+        console.log('req_rate_answer_ok');
+      }
+    });
+  }	else
+    socket.emit('req_decline', { status: "many_rate_req" });
+  reqCancelTimeout=60;
+  });
+
+  socket.on('client_info', function (data) {
+    if(typeof data==='string')	{
+      tp = tryParseJSON(data);
+      if(tp)
+        data = tp;
+    }
+
+    emitClientInfo(data.id);
+  });
+
+  function emitClientInfo(clientId) {
+    queryRequest('SELECT dbo.GetJSONClientInfo(' + clientId + ') as JSON_DATA',
+          function (recordset) {
+            if (recordset && recordset.recordset) {
+              socket.emit('client_info', JSON.parse(recordset.recordset[0].JSON_DATA));
+              console.log('client_info: ' + recordset.recordset[0].JSON_DATA);
+            }
+          },
+          function (err) {
+            socket.emit('client_info', {error: err});
+            console.log('Error of client_info get: ' + err);
+          },
+          connection);
+  }
+
+  socket.on('update_client_info', function (data) {
+  console.log(data);
+  console.log("=======");
+  console.log(typeof data);
+  if(typeof data==='string')	{
+    tp = tryParseJSON(data);
+    console.log("=======");
+    console.log(tp);
+    if(tp)
+      data = tp;
+  }
+
+  //console.log('cancel orders '+data.phone);
+  if(reqCancelTimeout<=0)	{
+
+    var request2 = new sql.Request(connection);
+    request2.query('EXEC	[dbo].[UpdateClientInfo] @name = N\'' + data.name +'\', @client_id = ' + data.id,
+    function(err, recordset) {
+      if(err)	{
+        socket.emit('update_client_info_answer', { status: "ERROR" });
+        console.log('update_client_info_answer_error');
+        console.log(err.message);                      // Canceled.
+        console.log(err.code);                         // ECANCEL
+      }
+      else	{
+        socket.emit('update_client_info_answer', { status: "OK" });
+        console.log('req_rate_answer_ok');
+      }
+    });
+  }	else
+    socket.emit('req_decline', { status: "many_update_client_info_req" });
+  reqCancelTimeout=60;
+  });
+
   socket.on('disconnect', function () {
     console.log('user disconnected');
 	clientsCount--;
   });
 });
-
-socket.on('rate', function (data) {
-console.log(data);
-console.log("=======");
-console.log(typeof data);
-if(typeof data==='string')	{
-  tp = tryParseJSON(data);
-  console.log("=======");
-  console.log(tp);
-  if(tp)
-    data = tp;
-}
-
-//console.log('cancel orders '+data.phone);
-if(reqCancelTimeout<=0)	{
-
-  var request2 = new sql.Request(connection);
-  request2.query('EXEC	[dbo].[RateDriver] @rate = ' + data.rate +', @driver_id = ' + data.id,
-  function(err, recordset) {
-    if(err)	{
-      socket.emit('req_rate_answer', { status: "ERROR" });
-      console.log('req_rate_answer_error');
-      console.log(err.message);                      // Canceled.
-      console.log(err.code);                         // ECANCEL
-    }
-    else	{
-      socket.emit('req_rate_answer', { status: "OK" });
-      console.log('req_rate_answer_ok');
-    }
-  });
-}	else
-  socket.emit('req_decline', { status: "many_rate_req" });
-reqCancelTimeout=60;
-});
-
-socket.on('client_info', function (data) {
-  if(typeof data==='string')	{
-    tp = tryParseJSON(data);
-    if(tp)
-      data = tp;
-  }
-
-  emitClientInfo(data.id);
-});
-
-function emitClientInfo(clientId) {
-  queryRequest('SELECT dbo.GetJSONClientInfo(' + clientId + ') as JSON_DATA',
-        function (recordset) {
-          if (recordset && recordset.recordset) {
-            socket.emit('client_info', JSON.parse(recordset.recordset[0].JSON_DATA));
-            console.log('client_info: ' + recordset.recordset[0].JSON_DATA);
-          }
-        },
-        function (err) {
-          socket.emit('client_info', {error: err});
-          console.log('Error of client_info get: ' + err);
-        },
-        connection);
-}
