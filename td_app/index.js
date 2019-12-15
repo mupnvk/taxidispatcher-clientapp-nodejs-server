@@ -3,7 +3,10 @@ var encoding = require("encoding");
 var express = require('express'),
     app = module.exports.app = express(),
     custom = require('./settings_custom'),
-    maps = require('../../taxidispatcher-web-common/maps');
+    maps = require('../../taxidispatcher-web-common/maps'),
+    TokenGenerator = require('uuid-token-generator');
+
+var tokgen = new TokenGenerator(); // Default is a 128-bit token encoded in base58
 
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);  //pass a http.Server instance
@@ -101,7 +104,8 @@ io.sockets.on('connection', function (socket) {
   var clientActiveTime=0,
   sectorId = 0, districtId = 0, companyId = 0,
   sectorName = '', districtName = '', districtGeo = '', companyName = '',
-  tariffPlanId = 0, tariffPlanName = '', badDetecting = false;
+  tariffPlanId = 0, tariffPlanName = '', badDetecting = false,
+  clientToken = tokgen.generate();
 
   function decReqTimeout()	{
 	  if(reqTimeout>0)
@@ -149,6 +153,10 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('my other event', function (data) {
+    if (!data.client_token || clientToken !== data.client_token) {
+      return;
+    }
+
     console.log(data);
   });
 
@@ -195,9 +203,10 @@ io.sockets.on('connection', function (socket) {
 				var parameters = recordsets.output;
 				console.log('CheckClientRegistration result client_id='+parameters.client_id);
 				socket.emit('auth', { client_id: parameters.client_id,
-						req_trust: parameters.req_trust,
-						isagainr: parameters.isagainr,
-						acc_status: parameters.acc_status
+  						req_trust: parameters.req_trust,
+  						isagainr: parameters.isagainr,
+  						acc_status: parameters.acc_status,
+              client_token: parameters.client_id && parameters.client_id > 0 ? clientToken : ''
 						});
 			}
 
@@ -231,26 +240,36 @@ io.sockets.on('connection', function (socket) {
   }
 
   socket.on('status', function (data) {
-	if(typeof data==='string')	{
-		tp = tryParseJSON(data);
-		if(tp)
-			data = tp;
-	}
+  	if(typeof data==='string')	{
+  		tp = tryParseJSON(data);
+  		if(tp)
+  			data = tp;
+  	}
+
+    if (!data.client_token || clientToken !== data.client_token) {
+      return;
+    }
+
     emitSectorDetecting();
     requestAndSendStatus(connection, data.cid);
   });
 
   socket.on('tarifs_and_options', function (data) {
-	if(typeof data==='string')	{
-		tp = tryParseJSON(data);
-		if(tp)
-			data = tp;
-	}
-	if (data.cid) {
-	   emitTarifAndOptionsList(data.cid);
-	} else if (companyId) {
-	   emitTarifAndOptionsList(companyId);
-	}
+  	if(typeof data==='string')	{
+  		tp = tryParseJSON(data);
+  		if(tp)
+  			data = tp;
+  	}
+
+    if (!data.client_token || clientToken !== data.client_token) {
+      return;
+    }
+
+  	if (data.cid) {
+  	   emitTarifAndOptionsList(data.cid);
+  	} else if (companyId) {
+  	   emitTarifAndOptionsList(companyId);
+  	}
   });
 
   function emitTarifAndOptionsList(companyId) {
@@ -273,6 +292,11 @@ io.sockets.on('connection', function (socket) {
   		if(tp)
   			data = tp;
   	}
+
+    if (!data.client_token || clientToken !== data.client_token) {
+      return;
+    }
+
   	if (data.cid) {
   	   emitCompanyDriversList(data.cid);
   	} else if (companyId) {
@@ -327,35 +351,35 @@ io.sockets.on('connection', function (socket) {
   }
 
   socket.on('cancel order', function (data) {
-	console.log(data);
-	console.log("=======");
-	console.log(typeof data);
-	if(typeof data==='string')	{
-		tp = tryParseJSON(data);
-		console.log("=======");
-		console.log(tp);
-		if(tp)
-			data = tp;
-	}
+  	if(typeof data==='string')	{
+  		tp = tryParseJSON(data);
+  		if(tp)
+  			data = tp;
+  	}
 
-	console.log('cancel orders '+data.phone);
-	if(reqCancelTimeout<=0)	{
+    if (!data.client_token || clientToken !== data.client_token) {
+      return;
+    }
 
-	var request2 = new sql.Request(connection);
-    request2.query('EXEC	[dbo].[CancelOrdersRClient] @phone = N\''+data.phone+'\', @client_id = '+data.id,
-		function(err, recordset) {
-			requestAndSendStatus(connection, data.id, data.phone, true);
-			if(err)	{
-				console.log(err.message);                      // Canceled.
-				console.log(err.code);                         // ECANCEL
-			}
-			else	{
-				console.log(recordset);
-			}
-		});
-	}	else
-		socket.emit('req_decline', { status: "many_new_order_req" });
-	reqCancelTimeout=60;
+  	console.log('cancel orders '+data.phone);
+  	if(reqCancelTimeout<=0)	{
+
+  	var request2 = new sql.Request(connection);
+      request2.query('EXEC	[dbo].[CancelOrdersRClient] @phone = N\''+data.phone+'\', @client_id = '+data.id,
+  		function(err, recordset) {
+  			requestAndSendStatus(connection, data.id, data.phone, true);
+  			if(err)	{
+  				console.log(err.message);                      // Canceled.
+  				console.log(err.code);                         // ECANCEL
+  			}
+  			else	{
+  				console.log(recordset);
+  			}
+  		});
+  	}	else {
+  		socket.emit('req_decline', { status: "many_new_order_req" });
+    }
+  	reqCancelTimeout=60;
   });
 
   function detectSector(pointLat, pointLon) {
@@ -404,39 +428,38 @@ io.sockets.on('connection', function (socket) {
   }
 
   socket.on('ccoords', function (data) {
-	console.log(data);
-	console.log("=======");
-	console.log(typeof data);
-	if(typeof data==='string')	{
-		tp = tryParseJSON(data);
-		console.log("=======");
-		console.log(tp);
-		if(tp)
-			data = tp;
-	}
+  	if(typeof data==='string')	{
+  		tp = tryParseJSON(data);
+  		if(tp)
+  			data = tp;
+  	}
 
-	if (!(data.clat && data.clon) || data.clat.indexOf('0') == 0 || data.clon.indexOf('0') == 0) {
-		console.log('Empty coords!');
-		return;
-	}
+    if (!data.client_token || clientToken !== data.client_token) {
+      return;
+    }
 
-	console.log('ccoords '+data.phone+', lat='+data.clat+', lon='+data.clon);
+  	if (!(data.clat && data.clon) || data.clat.indexOf('0') == 0 || data.clon.indexOf('0') == 0) {
+  		console.log('Empty coords!');
+  		return;
+  	}
 
-  if (!(sectorId || sectorName)) {
-    detectSector(data.clat, data.clon);
-  }
+  	console.log('ccoords ' + data.phone + ', lat=' + data.clat + ', lon=' + data.clon);
 
-	var request2 = new sql.Request(connection); // or: var request = connection.request();
-    request2.query('EXEC	[dbo].[ApplyRClientCoords] @rclient_id='+data.id+', @lat = N\''+data.clat+'\', @lon = N\''+data.clon+'\'',
-		function(err, recordset) {
-			if(err)	{
-				console.log(err.message);                      // Canceled.
-				console.log(err.code);                         // ECANCEL
-			}
-			else	{
-				console.log('Success apply coords');
-			}
-		});
+    if (!(sectorId || sectorName)) {
+      detectSector(data.clat, data.clon);
+    }
+
+  	var request2 = new sql.Request(connection); // or: var request = connection.request();
+      request2.query('EXEC	[dbo].[ApplyRClientCoords] @rclient_id='+data.id+', @lat = N\''+data.clat+'\', @lon = N\''+data.clon+'\'',
+  		function(err, recordset) {
+  			if(err)	{
+  				console.log(err.message);                      // Canceled.
+  				console.log(err.code);                         // ECANCEL
+  			}
+  			else	{
+  				console.log('Success apply coords');
+  			}
+  		});
   });
 
   socket.on('new order', function (data) {
@@ -445,6 +468,10 @@ io.sockets.on('connection', function (socket) {
 		if(tp)
 			data = tp;
 	}
+
+  if (!data.client_token || clientToken !== data.client_token) {
+    return;
+  }
 
 	var out='';
 	var dat = data;//['dr_count']
@@ -525,14 +552,14 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('rate', function (data) {
   console.log(data);
-  console.log("=======");
-  console.log(typeof data);
   if(typeof data==='string')	{
     tp = tryParseJSON(data);
-    console.log("=======");
-    console.log(tp);
     if(tp)
       data = tp;
+  }
+
+  if (!data.client_token || clientToken !== data.client_token) {
+    return;
   }
 
   //console.log('cancel orders '+data.phone);
@@ -564,6 +591,10 @@ io.sockets.on('connection', function (socket) {
         data = tp;
     }
 
+    if (!data.client_token || clientToken !== data.client_token) {
+      return;
+    }
+
     emitClientInfo(data.id);
   });
 
@@ -584,14 +615,14 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('update_client_info', function (data) {
   console.log(data);
-  console.log("=======");
-  console.log(typeof data);
   if(typeof data==='string')	{
     tp = tryParseJSON(data);
-    console.log("=======");
-    console.log(tp);
     if(tp)
       data = tp;
+  }
+
+  if (!data.client_token || clientToken !== data.client_token) {
+    return;
   }
 
   //console.log('cancel orders '+data.phone);
@@ -618,6 +649,6 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('disconnect', function () {
     console.log('user disconnected');
-	clientsCount--;
+	  clientsCount--;
   });
 });
