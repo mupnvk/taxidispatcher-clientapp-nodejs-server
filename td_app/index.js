@@ -298,14 +298,19 @@ io.sockets.on('connection', function (socket) {
     }
 
   	if (data.cid) {
-  	   emitCompanyDriversList(data.cid);
+  	   emitCompanyDriversList(data.cid, data);
   	} else if (companyId) {
-  	   emitCompanyDriversList(companyId);
+  	   emitCompanyDriversList(companyId, data);
   	}
   });
 
-  function emitCompanyDriversList(companyId) {
-    queryRequest('SELECT dbo.GetJSONCompanyDriversList(' + companyId + ') as JSON_DATA',
+  function emitCompanyDriversList(companyId, data) {
+    var selectBase = 'SELECT dbo.GetJSONCompanyDriversList(' + companyId;
+    if (data.radius && data.lat && data.lon) {
+      selectBase = 'SELECT dbo.GetJSONCompanyDriversListInRadius(' + companyId +
+       ',0,' + data.radius + ',' + data.lat + ',' + data.lon;
+    }
+    queryRequest(selectBase + ') as JSON_DATA',
           function (recordset) {
             if (recordset && recordset.recordset) {
               socket.emit('driver_list', JSON.parse(recordset.recordset[0].JSON_DATA));
@@ -495,7 +500,8 @@ io.sockets.on('connection', function (socket) {
 		enadr_val='';
 	}
 
-  if (sectorId || data.driver_id || data.shedule_date) {
+  if (sectorId || data.driver_id || data.shedule_date || data.comment ||
+    data.client_time || data.client_distance || data.client_prev_summ) {
     //console.lo
     if (data.tariffPlanId) {
       tariffPlanId = data.tariffPlanId;
@@ -521,7 +527,10 @@ io.sockets.on('connection', function (socket) {
       ',@lat = N\''+ orderLat +'\',@lon = N\''+ orderLon +'\',' +
       ' @sector_id = ' + (sectorId || 0) + ', @district_id = ' + (districtId || 0) +
       ', @company_id = ' + (companyId || 0) + ', @tplan_id = ' + (tariffPlanId || 0) + ', ' +
-      ' @for_all =0, @driver_id = ' + driverId + ', @shedule_date = ' + sheduleDate + ', @ord_num = 0, @order_id = 0';
+      ' @for_all =0, @driver_id = ' + driverId + ', @shedule_date = ' + sheduleDate +
+      ', @comment = N\'' + (data.comment || '') + '\', @client_time = ' + (data.client_time || 0) +
+      ', @client_distance = ' + (data.client_distance || 0) +
+      ', @client_prev_summ = ' + (data.client_prev_summ || 0) + ', @ord_num = 0, @order_id = 0';
   } else if (data.lat && data.lon) {
 		console.log('============================== insert with coords ' + data.lat + '  ' + data.lon);
 		sqlTxt = 'EXEC	[dbo].[InsertOrderWithParamsRClientWCoords] @adres = N\''+data.stadr+'\', @enadres = N\''+enadr_val+'\',@phone = N\''+data.phone+'\','+
