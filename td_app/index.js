@@ -502,7 +502,9 @@ io.sockets.on('connection', function (socket) {
 
   if (sectorId || data.driver_id || data.shedule_date || data.comment ||
     data.client_time || data.client_distance || data.client_prev_summ ||
-    data.dest_lat || data.dest_lon) {
+    data.dest_lat || data.dest_lon || data.first_stop_adr || data.first_stop_lat ||
+    data.first_stop_lon || data.second_stop_adr || data.second_stop_lat ||
+    data.second_stop_lon) {
     //console.lo
     if (data.tariffPlanId) {
       tariffPlanId = data.tariffPlanId;
@@ -533,7 +535,14 @@ io.sockets.on('connection', function (socket) {
       ', @client_distance = ' + (data.client_distance || 0) +
       ', @client_prev_summ = ' + (data.client_prev_summ || 0) +
       ', @dest_lat = ' + (data.dest_lat || 0) +
-      ', @dest_lon = ' + (data.dest_lon || 0) + ', @ord_num = 0, @order_id = 0';
+      ', @dest_lon = ' + (data.dest_lon || 0) +
+      ', @first_stop_adr = N\'' + (data.first_stop_adr || '') +
+      '\', @first_stop_lat = ' + (data.first_stop_lat || 0) +
+      ', @first_stop_lon = ' + (data.first_stop_lon || 0) +
+      ', @second_stop_adr = N\'' + (data.second_stop_adr || '') +
+      '\', @second_stop_lat = ' + (data.second_stop_lat || 0) +
+      ', @second_stop_lon = ' + (data.second_stop_lon || 0) + 
+      ', @ord_num = 0, @order_id = 0';
   } else if (data.lat && data.lon) {
 		console.log('============================== insert with coords ' + data.lat + '  ' + data.lon);
 		sqlTxt = 'EXEC	[dbo].[InsertOrderWithParamsRClientWCoords] @adres = N\''+data.stadr+'\', @enadres = N\''+enadr_val+'\',@phone = N\''+data.phone+'\','+
