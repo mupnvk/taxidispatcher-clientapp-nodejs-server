@@ -501,7 +501,8 @@ io.sockets.on('connection', function (socket) {
 	}
 
   if (sectorId || data.driver_id || data.shedule_date || data.comment ||
-    data.client_time || data.client_distance || data.client_prev_summ) {
+    data.client_time || data.client_distance || data.client_prev_summ ||
+    data.dest_lat || data.dest_lon) {
     //console.lo
     if (data.tariffPlanId) {
       tariffPlanId = data.tariffPlanId;
@@ -530,7 +531,9 @@ io.sockets.on('connection', function (socket) {
       ' @for_all =0, @driver_id = ' + driverId + ', @shedule_date = ' + sheduleDate +
       ', @comment = N\'' + (data.comment || '') + '\', @client_time = ' + (data.client_time || 0) +
       ', @client_distance = ' + (data.client_distance || 0) +
-      ', @client_prev_summ = ' + (data.client_prev_summ || 0) + ', @ord_num = 0, @order_id = 0';
+      ', @client_prev_summ = ' + (data.client_prev_summ || 0) +
+      ', @dest_lat = ' + (data.dest_lat || 0) +
+      ', @dest_lon = ' + (data.dest_lon || 0) + ', @ord_num = 0, @order_id = 0';
   } else if (data.lat && data.lon) {
 		console.log('============================== insert with coords ' + data.lat + '  ' + data.lon);
 		sqlTxt = 'EXEC	[dbo].[InsertOrderWithParamsRClientWCoords] @adres = N\''+data.stadr+'\', @enadres = N\''+enadr_val+'\',@phone = N\''+data.phone+'\','+
