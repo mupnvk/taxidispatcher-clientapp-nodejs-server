@@ -24,7 +24,8 @@ bbox = {
   minLon: false,
   maxLat: false,
   maxLon: false
-};
+},
+useTokenProtect = false;
 
 console.log('Start test db-connection...'+sql);
 var connectionMain = new sql.ConnectionPool(config, function(err) {
@@ -153,7 +154,7 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('my other event', function (data) {
-    if (!data.client_token || clientToken !== data.client_token) {
+    if ((!data.client_token || clientToken !== data.client_token) && useTokenProtect) {
       return;
     }
 
@@ -246,7 +247,7 @@ io.sockets.on('connection', function (socket) {
   			data = tp;
   	}
 
-    if (!data.client_token || clientToken !== data.client_token) {
+    if ((!data.client_token || clientToken !== data.client_token) && useTokenProtect) {
       return;
     }
 
@@ -261,7 +262,7 @@ io.sockets.on('connection', function (socket) {
   			data = tp;
   	}
 
-    if (!data.client_token || clientToken !== data.client_token) {
+    if ((!data.client_token || clientToken !== data.client_token) && useTokenProtect) {
       return;
     }
 
@@ -293,7 +294,7 @@ io.sockets.on('connection', function (socket) {
   			data = tp;
   	}
 
-    if (!data.client_token || clientToken !== data.client_token) {
+    if ((!data.client_token || clientToken !== data.client_token) && useTokenProtect) {
       return;
     }
 
@@ -362,7 +363,7 @@ io.sockets.on('connection', function (socket) {
   			data = tp;
   	}
 
-    if (!data.client_token || clientToken !== data.client_token) {
+    if ((!data.client_token || clientToken !== data.client_token) && useTokenProtect) {
       return;
     }
 
@@ -439,7 +440,7 @@ io.sockets.on('connection', function (socket) {
   			data = tp;
   	}
 
-    if (!data.client_token || clientToken !== data.client_token) {
+    if ((!data.client_token || clientToken !== data.client_token) && useTokenProtect) {
       return;
     }
 
@@ -474,7 +475,7 @@ io.sockets.on('connection', function (socket) {
 			data = tp;
 	}
 
-  if (!data.client_token || clientToken !== data.client_token) {
+  if ((!data.client_token || clientToken !== data.client_token) && useTokenProtect) {
     return;
   }
 
@@ -541,7 +542,7 @@ io.sockets.on('connection', function (socket) {
       ', @first_stop_lon = ' + (data.first_stop_lon || 0) +
       ', @second_stop_adr = N\'' + (data.second_stop_adr || '') +
       '\', @second_stop_lat = ' + (data.second_stop_lat || 0) +
-      ', @second_stop_lon = ' + (data.second_stop_lon || 0) + 
+      ', @second_stop_lon = ' + (data.second_stop_lon || 0) +
       ', @ord_num = 0, @order_id = 0';
   } else if (data.lat && data.lon) {
 		console.log('============================== insert with coords ' + data.lat + '  ' + data.lon);
@@ -579,7 +580,7 @@ io.sockets.on('connection', function (socket) {
       data = tp;
   }
 
-  if (!data.client_token || clientToken !== data.client_token) {
+  if ((!data.client_token || clientToken !== data.client_token) && useTokenProtect) {
     return;
   }
 
@@ -612,7 +613,7 @@ io.sockets.on('connection', function (socket) {
         data = tp;
     }
 
-    if (!data.client_token || clientToken !== data.client_token) {
+    if ((!data.client_token || clientToken !== data.client_token) && useTokenProtect) {
       return;
     }
 
@@ -642,7 +643,7 @@ io.sockets.on('connection', function (socket) {
       data = tp;
   }
 
-  if (!data.client_token || clientToken !== data.client_token) {
+  if ((!data.client_token || clientToken !== data.client_token) && useTokenProtect) {
     return;
   }
 
