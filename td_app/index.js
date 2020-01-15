@@ -306,10 +306,11 @@ io.sockets.on('connection', function (socket) {
   });
 
   function emitCompanyDriversList(companyId, data) {
-    var selectBase = 'SELECT dbo.GetJSONCompanyDriversList(' + companyId;
+    var selectBase = 'SELECT dbo.GetJSONCompanyDriversListInRadius(' + companyId +
+      ',1,0,0,0';
     if (data.radius && data.lat && data.lon) {
       selectBase = 'SELECT dbo.GetJSONCompanyDriversListInRadius(' + companyId +
-       ',0,' + data.radius + ',' + data.lat + ',' + data.lon;
+       ',1,' + data.radius + ',' + data.lat + ',' + data.lon;
     }
     queryRequest(selectBase + ') as JSON_DATA',
           function (recordset) {
@@ -532,7 +533,7 @@ io.sockets.on('connection', function (socket) {
       ' @sector_id = ' + (sectorId || 0) + ', @district_id = ' + (districtId || 0) +
       ', @company_id = ' + (companyId || 0) + ', @tplan_id = ' + (tariffPlanId || 0) + ', ' +
       ' @for_all =0, @driver_id = ' + driverId + ', @shedule_date = ' + sheduleDate +
-      ', @comment = N\'' + (data.comment || '') + '\', @client_time = ' + (data.client_time || 0) +
+      ', @cl_comment = N\'' + (data.comment || '') + '\', @client_time = ' + (data.client_time || 0) +
       ', @client_distance = ' + (data.client_distance || 0) +
       ', @client_prev_summ = ' + (data.client_prev_summ || 0) +
       ', @dest_lat = ' + (data.dest_lat || 0) +
