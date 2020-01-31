@@ -7,4 +7,4 @@ npm install express npm install express-session
 npm install encoding npm install request
 
 порты
-6030,8081,8085,6031,6033,8088,8090,3333
+6030,8081,8085,6031,6033,8088,8090,3333,8080
