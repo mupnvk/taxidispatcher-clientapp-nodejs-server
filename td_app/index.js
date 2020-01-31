@@ -415,6 +415,7 @@ io.sockets.on('connection', function (socket) {
               companyId = sectorData.sector_company_id;
               companyName = sectorData.company_name;
 
+              console.log('Succ detect sector in poligon area!');
               emitSectorDetectingWithTarifAndOptions();
             } else {
               badDetecting = true;
@@ -445,6 +446,7 @@ io.sockets.on('connection', function (socket) {
           companyId = companyData.BOLD_ID;
           companyName = companyData.company_name;
 
+          console.log('Succ detect default company!');
           emitTarifAndOptionsList(companyId);
           detectDefaultDistrict();
         } else {
@@ -467,6 +469,7 @@ io.sockets.on('connection', function (socket) {
           districtName = districtData.dist_name + '(' + districtData.address + ')';
           districtGeo = districtData.address;
 
+          console.log('Succ detect default district!');
           detectDefaultSector();
         } else {
           badDetecting = true;
@@ -488,6 +491,7 @@ io.sockets.on('connection', function (socket) {
           sectorId = sectorData.BOLD_ID;
           sectorName = sectorData.Naimenovanie;
 
+          console.log('Succ detect default sector!');
           emitSectorDetecting();
         } else {
           badDetecting = true;
