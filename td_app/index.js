@@ -416,6 +416,8 @@ io.sockets.on('connection', function (socket) {
               companyName = sectorData.company_name;
 
               emitSectorDetectingWithTarifAndOptions();
+            } else {
+              badDetecting = true;
             }
           },
           function (err) {
@@ -430,8 +432,72 @@ io.sockets.on('connection', function (socket) {
     }
 
     if (!isDetect) {
-      badDetecting = true;
+      detectDefaultCompany();
     }
+  }
+
+  function detectDefaultCompany() {
+    queryRequest('SELECT gv.BOLD_ID, gdc.Naimenovanie as company_name FROM Gruppa_voditelei gv ' +
+    ' LEFT JOIN Spravochnik gdc ON gv.BOLD_ID = gdc.BOLD_ID WHERE gv.IS_DEF = 1',
+      function (recordset) {
+        if (recordset && recordset.recordset) {
+          companyData = recordset.recordset[0];
+          companyId = companyData.BOLD_ID;
+          companyName = companyData.company_name;
+
+          emitTarifAndOptionsList(companyId);
+          detectDefaultDistrict();
+        } else {
+          badDetecting = true;
+        }
+      },
+      function (err) {
+        badDetecting = true;
+        console.log('Err of detected default company_id! ' + err);
+      },
+      connection);
+  }
+
+  function detectDefaultDistrict() {
+    queryRequest('SELECT id, name, address FROM DISTRICTS WHERE IS_DEF = 1',
+      function (recordset) {
+        if (recordset && recordset.recordset) {
+          districtData = recordset.recordset[0];
+          districtId = districtData.id;
+          districtName = districtData.dist_name + '(' + districtData.address + ')';
+          districtGeo = districtData.address;
+
+          detectDefaultSector();
+        } else {
+          badDetecting = true;
+        }
+      },
+      function (err) {
+        badDetecting = true;
+        console.log('Err of detected default district_id! ' + err);
+      },
+      connection);
+  }
+
+  function detectDefaultSector() {
+    queryRequest('SELECT sc.BOLD_ID, dc.Naimenovanie FROM Sektor_raboty sc ' +
+    ' LEFT JOIN Spravochnik dc ON sc.BOLD_ID = dc.BOLD_ID WHERE sc.IS_DEF = 1',
+      function (recordset) {
+        if (recordset && recordset.recordset) {
+          sectorData = recordset.recordset[0];
+          sectorId = sectorData.BOLD_ID;
+          sectorName = sectorData.Naimenovanie;
+
+          emitSectorDetecting();
+        } else {
+          badDetecting = true;
+        }
+      },
+      function (err) {
+        badDetecting = true;
+        console.log('Err of detected default sector_id! ' + err);
+      },
+      connection);
   }
 
   socket.on('ccoords', function (data) {
