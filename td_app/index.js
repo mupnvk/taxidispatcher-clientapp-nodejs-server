@@ -576,6 +576,8 @@ io.sockets.on('connection', function (socket) {
     //console.lo
     if (data.tariffPlanId) {
       tariffPlanId = data.tariffPlanId;
+    } else {
+      tariffPlanId = 0;
     }
     /**
     ALTER PROCEDURE [dbo].[InsertOrderWithSectorAndTariffParams]
