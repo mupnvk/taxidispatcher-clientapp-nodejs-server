@@ -466,7 +466,7 @@ io.sockets.on('connection', function (socket) {
         if (recordset && recordset.recordset) {
           districtData = recordset.recordset[0];
           districtId = districtData.id;
-          districtName = districtData.dist_name + '(' + districtData.address + ')';
+          districtName = districtData.name + '(' + districtData.address + ')';
           districtGeo = districtData.address;
 
           console.log('Succ detect default district!');
