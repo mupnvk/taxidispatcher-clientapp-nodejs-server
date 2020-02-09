@@ -577,7 +577,8 @@ io.sockets.on('connection', function (socket) {
     data.dest_lat || data.dest_lon || data.first_stop_adr || data.first_stop_lat ||
     data.first_stop_lon || data.second_stop_adr || data.second_stop_lat ||
     data.second_stop_lon) {
-    //console.lo
+
+    //console.log('tariffPlanId: ' + JSON.stringify(data));
     if (data.tariffPlanId) {
       tariffPlanId = data.tariffPlanId;
     } else {
@@ -616,7 +617,8 @@ io.sockets.on('connection', function (socket) {
       ', @second_stop_adr = N\'' + (data.second_stop_adr || '') +
       '\', @second_stop_lat = ' + (data.second_stop_lat || 0) +
       ', @second_stop_lon = ' + (data.second_stop_lon || 0) +
-      ', @ord_num = 0, @order_id = 0';
+      ', @opt_comb_str = N\'' + (data.opt_comb_str || '') +
+      '\', @ord_num = 0, @order_id = 0';
   } else if (data.lat && data.lon) {
 		console.log('============================== insert with coords ' + data.lat + '  ' + data.lon);
 		sqlTxt = 'EXEC	[dbo].[InsertOrderWithParamsRClientWCoords] @adres = N\''+data.stadr+'\', @enadres = N\''+enadr_val+'\',@phone = N\''+data.phone+'\','+
@@ -658,7 +660,7 @@ io.sockets.on('connection', function (socket) {
   }
 
   //console.log('cancel orders '+data.phone);
-  if(reqCancelTimeout<=0)	{
+  if(reqCancelTimeout <= 0 || true)	{
 
     var request2 = new sql.Request(connection);
     request2.query('EXEC	[dbo].[RateDriver] @rate = ' + data.rate +', @driver_id = ' + data.id,
@@ -676,7 +678,7 @@ io.sockets.on('connection', function (socket) {
     });
   }	else
     socket.emit('req_decline', { status: "many_rate_req" });
-  reqCancelTimeout=60;
+  //reqCancelTimeout=60;
   });
 
   socket.on('client_info', function (data) {
