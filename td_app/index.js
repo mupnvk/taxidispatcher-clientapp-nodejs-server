@@ -106,7 +106,8 @@ io.sockets.on('connection', function (socket) {
   sectorId = 0, districtId = 0, companyId = 0,
   sectorName = '', districtName = '', districtGeo = '', companyName = '',
   tariffPlanId = 0, tariffPlanName = '', badDetecting = false,
-  clientToken = tokgen.generate();
+  clientToken = tokgen.generate(),
+  userId = 0, userPhone = '';
 
   function decReqTimeout()	{
 	  if(reqTimeout>0)
@@ -202,7 +203,8 @@ io.sockets.on('connection', function (socket) {
 				console.log('Error code:'+err.code);                         // ECANCEL //
 			}	else	{
 				var parameters = recordsets.output;
-				console.log('CheckClientRegistration result client_id='+parameters.client_id);
+				console.log('CheckClientRegistration result client_id=' + parameters.client_id);
+        userId = parameters.client_id;
 				socket.emit('auth', { client_id: parameters.client_id,
   						req_trust: parameters.req_trust,
   						isagainr: parameters.isagainr,
@@ -376,6 +378,39 @@ io.sockets.on('connection', function (socket) {
   		function(err, recordset) {
   			requestAndSendStatus(connection, data.id, data.phone, true);
   			if(err)	{
+  				console.log(err.message);                      // Canceled.
+  				console.log(err.code);                         // ECANCEL
+  			}
+  			else	{
+  				console.log(recordset);
+  			}
+  		});
+  	}	else {
+  		socket.emit('req_decline', { status: "many_new_order_req" });
+    }
+  	reqCancelTimeout=60;
+  });
+
+  socket.on('cancel-order-by-id', function (data) {
+  	if (typeof data==='string')	{
+  		tp = tryParseJSON(data);
+  		if (tp) {
+  			data = tp;
+      }
+  	}
+
+    if ((!data.client_token || clientToken !== data.client_token) && useTokenProtect) {
+      return;
+    }
+
+  	console.log('cancel-order-by-id ' + data.id);
+  	if (reqCancelTimeout<=0) {
+
+  	var request2 = new sql.Request(connection);
+      request2.query('EXEC	[dbo].[CancelOrdersRClientById] @order_id = ' + data.id,
+  		function(err, recordset) {
+  			requestAndSendStatus(connection, userId, '', true);
+  			if (err)	{
   				console.log(err.message);                      // Canceled.
   				console.log(err.code);                         // ECANCEL
   			}
@@ -617,7 +652,7 @@ io.sockets.on('connection', function (socket) {
       ', @second_stop_adr = N\'' + (data.second_stop_adr || '') +
       '\', @second_stop_lat = ' + (data.second_stop_lat || 0) +
       ', @second_stop_lon = ' + (data.second_stop_lon || 0) +
-      ', @opt_comb_str = N\'' + (data.opt_comb_str || '') +
+      ', @opt_comb_str = N\'' + (data.opt_comb_str || '-') +
       '\', @ord_num = 0, @order_id = 0';
   } else if (data.lat && data.lon) {
 		console.log('============================== insert with coords ' + data.lat + '  ' + data.lon);
