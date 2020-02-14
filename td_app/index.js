@@ -476,7 +476,7 @@ io.sockets.on('connection', function (socket) {
     queryRequest('SELECT gv.BOLD_ID, gdc.Naimenovanie as company_name FROM Gruppa_voditelei gv ' +
     ' LEFT JOIN Spravochnik gdc ON gv.BOLD_ID = gdc.BOLD_ID WHERE gv.IS_DEF = 1',
       function (recordset) {
-        if (recordset && recordset.recordset) {
+        if (recordset && recordset.recordset && recordset.recordset[0]) {
           companyData = recordset.recordset[0];
           companyId = companyData.BOLD_ID;
           companyName = companyData.company_name;
@@ -498,7 +498,7 @@ io.sockets.on('connection', function (socket) {
   function detectDefaultDistrict() {
     queryRequest('SELECT id, name, address FROM DISTRICTS WHERE IS_DEF = 1',
       function (recordset) {
-        if (recordset && recordset.recordset) {
+        if (recordset && recordset.recordset && recordset.recordset[0]) {
           districtData = recordset.recordset[0];
           districtId = districtData.id;
           districtName = districtData.name + '(' + districtData.address + ')';
@@ -521,7 +521,7 @@ io.sockets.on('connection', function (socket) {
     queryRequest('SELECT sc.BOLD_ID, dc.Naimenovanie FROM Sektor_raboty sc ' +
     ' LEFT JOIN Spravochnik dc ON sc.BOLD_ID = dc.BOLD_ID WHERE sc.IS_DEF = 1',
       function (recordset) {
-        if (recordset && recordset.recordset) {
+        if (recordset && recordset.recordset && recordset.recordset[0]) {
           sectorData = recordset.recordset[0];
           sectorId = sectorData.BOLD_ID;
           sectorName = sectorData.Naimenovanie;
